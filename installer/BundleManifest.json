@@ -1,0 +1,25 @@
+{
+  "name": "openclaw-portable-installer",
+  "version": "0.1.0",
+  "entryPoint": "Start-OpenClawPortableBundle.ps1",
+  "supportedArchitectures": [
+    "x64",
+    "arm64"
+  ],
+  "payloadRoots": {
+    "x64": "payload/x64",
+    "arm64": "payload/arm64"
+  },
+  "offlinePayloadConventions": {
+    "dockerImages": "images/*.tar",
+    "ollamaModelArchive": "ollama-models/ollama-models.tar.gz",
+    "wslInstaller": "wsl.msi",
+    "dockerInstaller": "DockerDesktopInstaller.exe"
+  },
+  "sourceInstaller": "scripts/Install-OpenClawStack.ps1",
+  "notes": [
+    "This is a scaffold for a reusable Windows bundle.",
+    "The bundle launcher forwards to the source installer when a runnable project tree is present.",
+    "Architecture-specific payload slots can include prerequisite installers, Docker image archives, and Ollama model payloads."
+  ]
+}

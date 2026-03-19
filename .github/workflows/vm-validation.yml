@@ -1,0 +1,40 @@
+name: vm-validation
+
+on:
+  push:
+    paths:
+      - "vm/**"
+      - ".github/workflows/vm-validation.yml"
+  pull_request:
+    paths:
+      - "vm/**"
+      - ".github/workflows/vm-validation.yml"
+  workflow_dispatch:
+
+jobs:
+  scaffold-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Packer
+        uses: hashicorp/setup-packer@main
+        with:
+          version: latest
+
+      - name: Packer init
+        run: packer init vm/packer/windows11-hyperv-validation.pkr.hcl
+
+      - name: Packer format check
+        run: packer fmt -check vm/packer/windows11-hyperv-validation.pkr.hcl
+
+      - name: Packer validate
+        run: packer validate vm/packer/windows11-hyperv-validation.pkr.hcl
+
+      - name: PowerShell syntax check
+        shell: pwsh
+        run: |
+          Get-ChildItem vm/scripts -Recurse -Filter *.ps1 | ForEach-Object {
+            [void][scriptblock]::Create((Get-Content $_.FullName -Raw))
+          }

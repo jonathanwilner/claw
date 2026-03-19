@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Placeholder unattended-install template for the Windows 11 Hyper-V scaffold.
+
+  This file is intentionally incomplete. Fill in the real edition selection,
+  disk layout, locale, and first-logon bootstrap steps before using it for a
+  full unattended build.
+
+  The scaffold keeps this file in-tree so the install surface is visible and the
+  Packer template has a concrete home for the eventual answer file.
+-->
+<unattend xmlns="urn:schemas-microsoft-com:unattend">
+  <settings pass="windowsPE">
+    <!-- TODO: Add Microsoft-Windows-International-Core-WinPE settings. -->
+    <!-- TODO: Add Microsoft-Windows-Setup disk and image selection. -->
+  </settings>
+  <settings pass="specialize">
+    <!-- TODO: Set hostname, time zone, and any domain/workgroup defaults. -->
+  </settings>
+  <settings pass="oobeSystem">
+    <!-- TODO: Add autologon and first-logon bootstrap commands. -->
+  </settings>
+</unattend>

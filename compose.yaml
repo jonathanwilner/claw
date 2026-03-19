@@ -1,0 +1,104 @@
+services:
+  ollama:
+    container_name: openclaw-ollama
+    image: ${OLLAMA_IMAGE:-ollama/ollama:latest}
+    ports:
+      - "127.0.0.1:11434:11434"
+    volumes:
+      - ${OLLAMA_DATA_DIR}:/root/.ollama
+    healthcheck:
+      test: ["CMD", "/bin/ollama", "list"]
+      interval: 20s
+      timeout: 10s
+      retries: 15
+      start_period: 20s
+    restart: unless-stopped
+
+  openclaw-gateway:
+    container_name: openclaw-gateway
+    image: ${OPENCLAW_IMAGE:-openclaw/openclaw:latest}
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      HOME: /home/node
+      TERM: xterm-256color
+      OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN:-}
+      OPENCLAW_ALLOW_INSECURE_PRIVATE_WS: ${OPENCLAW_ALLOW_INSECURE_PRIVATE_WS:-}
+      OLLAMA_API_KEY: ${OLLAMA_API_KEY:-local-ollama}
+      TZ: ${OPENCLAW_TZ:-UTC}
+      PLAYWRIGHT_BROWSERS_PATH: ${PLAYWRIGHT_BROWSERS_PATH:-/home/node/.cache/ms-playwright}
+    volumes:
+      - ${OPENCLAW_CONFIG_DIR}:/home/node/.openclaw
+      - ${OPENCLAW_WORKSPACE_DIR}:/home/node/.openclaw/workspace
+    ports:
+      - "${OPENCLAW_GATEWAY_PORT:-18789}:18789"
+      - "${OPENCLAW_BRIDGE_PORT:-18790}:18790"
+    init: true
+    restart: unless-stopped
+    command:
+      - node
+      - dist/index.js
+      - gateway
+      - --bind
+      - ${OPENCLAW_GATEWAY_BIND:-0.0.0.0}
+      - --port
+      - "18789"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:18789/healthz').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  ollama-loopback:
+    container_name: openclaw-ollama-loopback
+    image: alpine/socat:1.8.0.3
+    network_mode: service:openclaw-gateway
+    depends_on:
+      ollama:
+        condition: service_healthy
+      openclaw-gateway:
+        condition: service_started
+    command:
+      - TCP-LISTEN:11434,bind=127.0.0.1,fork,reuseaddr
+      - TCP:ollama:11434
+    restart: unless-stopped
+
+  openclaw-cli:
+    container_name: openclaw-cli
+    image: ${OPENCLAW_IMAGE:-openclaw/openclaw:latest}
+    network_mode: service:openclaw-gateway
+    depends_on:
+      openclaw-gateway:
+        condition: service_started
+      ollama-loopback:
+        condition: service_started
+    cap_drop:
+      - NET_RAW
+      - NET_ADMIN
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      HOME: /home/node
+      TERM: xterm-256color
+      OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN:-}
+      OPENCLAW_ALLOW_INSECURE_PRIVATE_WS: ${OPENCLAW_ALLOW_INSECURE_PRIVATE_WS:-}
+      OLLAMA_API_KEY: ${OLLAMA_API_KEY:-local-ollama}
+      BROWSER: echo
+      TZ: ${OPENCLAW_TZ:-UTC}
+    volumes:
+      - ${OPENCLAW_CONFIG_DIR}:/home/node/.openclaw
+      - ${OPENCLAW_WORKSPACE_DIR}:/home/node/.openclaw/workspace
+    stdin_open: true
+    tty: true
+    init: true
+    entrypoint:
+      - node
+      - dist/index.js
