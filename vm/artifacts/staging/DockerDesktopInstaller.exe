@@ -1,5 +1,0 @@
-Placeholder staging file.
-
-The host-side validation wrapper overwrites this file with the real Docker Desktop
-installer before a build run. It exists so the Packer template can validate
-without needing the actual installer in the repository.

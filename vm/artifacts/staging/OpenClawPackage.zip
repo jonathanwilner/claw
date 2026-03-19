@@ -1,5 +1,0 @@
-Placeholder staging file.
-
-The host-side validation wrapper overwrites this file with a zip payload before
-a real build. By default, it zips the current repository so the guest can run
-the packaged `scripts/Install-OpenClawStack.ps1` flow directly.
