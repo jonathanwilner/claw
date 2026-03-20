@@ -26,7 +26,7 @@ You are a senior Windows/WSL2/Docker engineer who specializes in deploying open-
 
 This is the prompt used by this runbook for implementation-oriented work.
 
-Source file: [WINDOWS_WSL2_DOCKER_CODEX_PROMPT.md](/home/jonathan/src/claw/WINDOWS_WSL2_DOCKER_CODEX_PROMPT.md)
+Source file: [WINDOWS_WSL2_DOCKER_CODEX_PROMPT.md](WINDOWS_WSL2_DOCKER_CODEX_PROMPT.md)
 
 Operational rule: when performing work from this runbook, load option `#2` first and treat it as the active system/role prompt.
 
@@ -63,7 +63,7 @@ Optimize for reproducible packaged deployment with minimal manual steps, strong 
 
 Use this when the task is about reducing attack surface, designing isolation boundaries, integrating TinyKVM or Hyper-V style controls, or otherwise expanding the security architecture of OpenClaw.
 
-Source file: [OPENCLAW_SECURITY_VM_CODEX_PROMPT.md](/home/jonathan/src/claw/OPENCLAW_SECURITY_VM_CODEX_PROMPT.md)
+Source file: [OPENCLAW_SECURITY_VM_CODEX_PROMPT.md](OPENCLAW_SECURITY_VM_CODEX_PROMPT.md)
 
 Operational rule: use option `#4` when the work is primarily about hardening, sandboxing, trust boundaries, exploit-surface reduction, or Linux/Windows virtualization architecture rather than ordinary packaging.
 
@@ -71,7 +71,7 @@ Operational rule: use option `#4` when the work is primarily about hardening, sa
 
 Use this when the task is specifically about deepening the current Linux host plus TinyKVM path in this repository without pretending upstream OpenClaw already ships a native TinyKVM sandbox backend.
 
-Source file: [OPENCLAW_TINYKVM_INTEGRATION_CODEX_PROMPT.md](/home/jonathan/src/claw/OPENCLAW_TINYKVM_INTEGRATION_CODEX_PROMPT.md)
+Source file: [OPENCLAW_TINYKVM_INTEGRATION_CODEX_PROMPT.md](OPENCLAW_TINYKVM_INTEGRATION_CODEX_PROMPT.md)
 
 Operational rule: use option `#5` when the work should turn that prompt directly into concrete repo changes such as host service hardening, TinyKVM execution-lane tightening, install-time enforcement, and security validation.
 

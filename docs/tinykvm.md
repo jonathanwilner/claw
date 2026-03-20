@@ -15,22 +15,22 @@ In other words: this repo no longer pretends that OpenClaw has a native TinyKVM 
 ## Recommended Topology
 
 - OpenClaw gateway runs directly on a Linux host
-- Ollama still runs locally, using the existing [compose.yaml](/home/jonathan/src/claw/compose.yaml) `ollama` service
+- Ollama still runs locally, using the existing [compose.yaml](../compose.yaml) `ollama` service
 - OpenClaw sandbox mode is set to `off` so you do not stack Docker sandboxing on top of TinyKVM work
 - TinyKVM is used explicitly through the installed `openclaw-tinykvm-run` wrapper for Linux ELF workloads
 
 This is the cleanest current boundary if your goal is “use TinyKVM where it actually helps” instead of keeping the old Dockerized gateway shape.
 
-For the security-focused architecture writeup, see [tinykvm-security-architecture.md](/home/jonathan/src/claw/docs/tinykvm-security-architecture.md).
+For the security-focused architecture writeup, see [tinykvm-security-architecture.md](tinykvm-security-architecture.md).
 
 ## Scripts
 
-- Host setup: [Install-OpenClawTinyKvmHost.sh](/home/jonathan/src/claw/scripts/Install-OpenClawTinyKvmHost.sh)
-- Host service hardening: [Apply-OpenClawSystemdHardening.sh](/home/jonathan/src/claw/scripts/Apply-OpenClawSystemdHardening.sh)
-- TinyKVM tooling build/install: [Install-TinyKvmTooling.sh](/home/jonathan/src/claw/scripts/Install-TinyKvmTooling.sh)
-- Validation: [Validate-OpenClawTinyKvmHost.sh](/home/jonathan/src/claw/scripts/Validate-OpenClawTinyKvmHost.sh)
-- TinyKVM runner wrapper: [openclaw-tinykvm-run.sh](/home/jonathan/src/claw/scripts/openclaw-tinykvm-run.sh)
-- Runner source: [openclaw_tinykvm_runner.cpp](/home/jonathan/src/claw/tinykvm-runner/openclaw_tinykvm_runner.cpp)
+- Host setup: [Install-OpenClawTinyKvmHost.sh](../scripts/Install-OpenClawTinyKvmHost.sh)
+- Host service hardening: [Apply-OpenClawSystemdHardening.sh](../scripts/Apply-OpenClawSystemdHardening.sh)
+- TinyKVM tooling build/install: [Install-TinyKvmTooling.sh](../scripts/Install-TinyKvmTooling.sh)
+- Validation: [Validate-OpenClawTinyKvmHost.sh](../scripts/Validate-OpenClawTinyKvmHost.sh)
+- TinyKVM runner wrapper: [openclaw-tinykvm-run.sh](../scripts/openclaw-tinykvm-run.sh)
+- Runner source: [openclaw_tinykvm_runner.cpp](../tinykvm-runner/openclaw_tinykvm_runner.cpp)
 
 ## Quick Start
 

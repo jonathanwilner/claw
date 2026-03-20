@@ -9,13 +9,15 @@ The original Windows packaging is still here. The new TinyKVM path exists becaus
 
 ## TinyKVM Path
 
-Use the TinyKVM guide at [docs/tinykvm.md](/home/jonathan/src/claw/docs/tinykvm.md).
+Use the TinyKVM guide at [docs/tinykvm.md](docs/tinykvm.md).
+
+For the security-focused architecture writeup, see [docs/tinykvm-security-architecture.md](docs/tinykvm-security-architecture.md).
 
 The main entrypoints are:
 
-- [Install-TinyKvmTooling.sh](/home/jonathan/src/claw/scripts/Install-TinyKvmTooling.sh)
-- [Install-OpenClawTinyKvmHost.sh](/home/jonathan/src/claw/scripts/Install-OpenClawTinyKvmHost.sh)
-- [Validate-OpenClawTinyKvmHost.sh](/home/jonathan/src/claw/scripts/Validate-OpenClawTinyKvmHost.sh)
+- [Install-TinyKvmTooling.sh](scripts/Install-TinyKvmTooling.sh)
+- [Install-OpenClawTinyKvmHost.sh](scripts/Install-OpenClawTinyKvmHost.sh)
+- [Validate-OpenClawTinyKvmHost.sh](scripts/Validate-OpenClawTinyKvmHost.sh)
 
 That path:
 
@@ -45,12 +47,12 @@ The implementation follows a BEADS-style decomposition:
 
 ## Repository Layout
 
-- [compose.yaml](/home/jonathan/src/claw/compose.yaml)
-- [.env.example](/home/jonathan/src/claw/.env.example)
-- [docs/README.md](/home/jonathan/src/claw/docs/README.md)
-- [vm/](/home/jonathan/src/claw/vm)
-- [scripts/](/home/jonathan/src/claw/scripts)
-- [tests/](/home/jonathan/src/claw/tests)
+- [compose.yaml](compose.yaml)
+- [.env.example](.env.example)
+- [docs/README.md](docs/README.md)
+- [vm/](vm)
+- [scripts/](scripts)
+- [tests/](tests)
 
 ## Default Flow
 
@@ -63,7 +65,7 @@ The implementation follows a BEADS-style decomposition:
 
 ## Existing VM Flow
 
-If you already have a running Windows WinApps VM named `RDPWindows`, use the BEADS runner at [Invoke-RDPWindowsBeads.sh](/home/jonathan/src/claw/vm/scripts/host/Invoke-RDPWindowsBeads.sh). It drives the live guest through the QEMU guest agent instead of building a new VM.
+If you already have a running Windows WinApps VM named `RDPWindows`, use the BEADS runner at [Invoke-RDPWindowsBeads.sh](vm/scripts/host/Invoke-RDPWindowsBeads.sh). It drives the live guest through the QEMU guest agent instead of building a new VM.
 
 ## Important Constraints
 

@@ -37,7 +37,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Install-OpenClawStack.ps1 `
 
 ## Portable Bundle Path
 
-If you want a copyable bundle that can be staged on another Windows machine, use the launcher under [installer/README.md](/home/jonathan/src/claw/installer/README.md).
+If you want a copyable bundle that can be staged on another Windows machine, use the launcher under [installer/README.md](../installer/README.md).
 
 The launcher detects `x64` vs `arm64`, selects the matching payload slot, and then forwards into the existing PowerShell installer:
 
@@ -50,7 +50,7 @@ powershell -ExecutionPolicy Bypass -File .\installer\Start-OpenClawPortableBundl
 
 ## What The Installer Does
 
-- Runs [Install-OpenClawPrereqs.ps1](/home/jonathan/src/claw/scripts/Install-OpenClawPrereqs.ps1) when `-InstallWsl` or `-InstallDockerDesktop` is requested
+- Runs [Install-OpenClawPrereqs.ps1](../scripts/Install-OpenClawPrereqs.ps1) when `-InstallWsl` or `-InstallDockerDesktop` is requested
 - Verifies Docker access with `docker info`
 - Creates `state/openclaw-config`, `state/openclaw-workspace`, and `state/ollama`
 - Writes a project-local `.env`
@@ -69,7 +69,7 @@ powershell -ExecutionPolicy Bypass -File .\installer\Start-OpenClawPortableBundl
 
 ## Portable Bundle
 
-To run the packaged installer tree on another machine, use [installer/Start-OpenClawPortableBundle.ps1](/home/jonathan/src/claw/installer/Start-OpenClawPortableBundle.ps1).
+To run the packaged installer tree on another machine, use [installer/Start-OpenClawPortableBundle.ps1](../installer/Start-OpenClawPortableBundle.ps1).
 
 The bundle launcher:
 
@@ -78,7 +78,7 @@ The bundle launcher:
 - forwards any staged `wsl.msi` and `DockerDesktopInstaller.exe`
 - imports any staged `images/*.tar` archives
 - restores any staged `ollama-models/ollama-models.tar.gz`
-- then invokes [Install-OpenClawStack.ps1](/home/jonathan/src/claw/scripts/Install-OpenClawStack.ps1)
+- then invokes [Install-OpenClawStack.ps1](../scripts/Install-OpenClawStack.ps1)
 - The portable bundle launcher also exports the resolved architecture and payload root through environment variables for future staged assets
 
 ## Verification

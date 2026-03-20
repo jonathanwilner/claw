@@ -49,13 +49,13 @@ Deploy performs the real guest changes:
 
 - install Docker Desktop if it is not already present and a staged installer is available
 - extract the repo zip to `C:\OpenClawPackage\repo`
-- run [Install-OpenClawStack.ps1](/home/jonathan/src/claw/scripts/Install-OpenClawStack.ps1) inside the guest
+- run [Install-OpenClawStack.ps1](../scripts/Install-OpenClawStack.ps1) inside the guest
 
 This is the highest-impact step. Run `check`, `bootstrap`, `environment`, and `artifacts` first if you want to narrow failure domains.
 
 ### S: Smoke
 
-Smoke runs [Invoke-OpenClawDeploymentValidation.ps1](/home/jonathan/src/claw/scripts/Invoke-OpenClawDeploymentValidation.ps1) inside the Windows guest against:
+Smoke runs [Invoke-OpenClawDeploymentValidation.ps1](../scripts/Invoke-OpenClawDeploymentValidation.ps1) inside the Windows guest against:
 
 - `http://127.0.0.1:11434/api/tags`
 - `http://127.0.0.1:18789/healthz`
@@ -66,12 +66,12 @@ It also verifies the expected container names.
 
 Primary entrypoint:
 
-- [Invoke-RDPWindowsBeads.sh](/home/jonathan/src/claw/vm/scripts/host/Invoke-RDPWindowsBeads.sh)
+- [Invoke-RDPWindowsBeads.sh](../vm/scripts/host/Invoke-RDPWindowsBeads.sh)
 
 Underlying implementation:
 
-- [Invoke-RDPWindowsBeads.py](/home/jonathan/src/claw/vm/scripts/host/Invoke-RDPWindowsBeads.py)
-- [rdpwindows_guest_agent.py](/home/jonathan/src/claw/vm/scripts/host/rdpwindows_guest_agent.py)
+- [Invoke-RDPWindowsBeads.py](../vm/scripts/host/Invoke-RDPWindowsBeads.py)
+- [rdpwindows_guest_agent.py](../vm/scripts/host/rdpwindows_guest_agent.py)
 
 ## Walkthrough
 

@@ -14,15 +14,15 @@ This directory now documents both the older Windows packaging path and the newer
 
 ## Primary Artifacts
 
-- Installer: [scripts/Install-OpenClawStack.ps1](/home/jonathan/src/claw/scripts/Install-OpenClawStack.ps1)
-- TinyKVM host installer: [scripts/Install-OpenClawTinyKvmHost.sh](/home/jonathan/src/claw/scripts/Install-OpenClawTinyKvmHost.sh)
-- TinyKVM host hardening: [scripts/Apply-OpenClawSystemdHardening.sh](/home/jonathan/src/claw/scripts/Apply-OpenClawSystemdHardening.sh)
-- TinyKVM tooling installer: [scripts/Install-TinyKvmTooling.sh](/home/jonathan/src/claw/scripts/Install-TinyKvmTooling.sh)
-- Portable bundle: [installer/README.md](/home/jonathan/src/claw/installer/README.md)
-- Validation wrapper: [scripts/Invoke-OpenClawDeploymentValidation.ps1](/home/jonathan/src/claw/scripts/Invoke-OpenClawDeploymentValidation.ps1)
-- Compose stack: [compose.yaml](/home/jonathan/src/claw/compose.yaml)
-- Environment template: [.env.example](/home/jonathan/src/claw/.env.example)
-- VM harness: [vm/README.md](/home/jonathan/src/claw/vm/README.md)
+- Installer: [scripts/Install-OpenClawStack.ps1](../scripts/Install-OpenClawStack.ps1)
+- TinyKVM host installer: [scripts/Install-OpenClawTinyKvmHost.sh](../scripts/Install-OpenClawTinyKvmHost.sh)
+- TinyKVM host hardening: [scripts/Apply-OpenClawSystemdHardening.sh](../scripts/Apply-OpenClawSystemdHardening.sh)
+- TinyKVM tooling installer: [scripts/Install-TinyKvmTooling.sh](../scripts/Install-TinyKvmTooling.sh)
+- Portable bundle: [installer/README.md](../installer/README.md)
+- Validation wrapper: [scripts/Invoke-OpenClawDeploymentValidation.ps1](../scripts/Invoke-OpenClawDeploymentValidation.ps1)
+- Compose stack: [compose.yaml](../compose.yaml)
+- Environment template: [.env.example](../.env.example)
+- VM harness: [vm/README.md](../vm/README.md)
 
 ## Execution Model
 

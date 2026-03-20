@@ -14,7 +14,7 @@ This packaging uses a BEADS-style decomposition:
 
 ### Windows host
 
-- Runs the primary operator entrypoints in [scripts/Install-OpenClawStack.ps1](/home/jonathan/src/claw/scripts/Install-OpenClawStack.ps1) and [scripts/Invoke-OpenClawDeploymentValidation.ps1](/home/jonathan/src/claw/scripts/Invoke-OpenClawDeploymentValidation.ps1)
+- Runs the primary operator entrypoints in [scripts/Install-OpenClawStack.ps1](../scripts/Install-OpenClawStack.ps1) and [scripts/Invoke-OpenClawDeploymentValidation.ps1](../scripts/Invoke-OpenClawDeploymentValidation.ps1)
 - Optionally installs WSL2 and Docker Desktop with `wsl.exe` and `winget`
 - Owns the persistent project directory and `state/` bind mounts
 - Owns Hyper-V and Packer during VM validation
@@ -56,23 +56,23 @@ The stack intentionally stays close to the current upstream OpenClaw Docker mode
 The TinyKVM-oriented path is deliberately different:
 
 - OpenClaw runs on a Linux host instead of inside the packaged gateway container
-- Ollama can still stay local, including via the existing [compose.yaml](/home/jonathan/src/claw/compose.yaml) `ollama` service
+- Ollama can still stay local, including via the existing [compose.yaml](../compose.yaml) `ollama` service
 - OpenClaw sandbox mode is disabled for that path, because the current package surface still exposes Docker sandbox settings rather than a native TinyKVM backend
 - The host gateway is hardened separately with a user-systemd override instead of assuming TinyKVM alone protects the control plane
-- TinyKVM is installed as host-side tooling and invoked through the local runner wrapper built from [tinykvm-runner/](/home/jonathan/src/claw/tinykvm-runner)
+- TinyKVM is installed as host-side tooling and invoked through the local runner wrapper built from [tinykvm-runner/](../tinykvm-runner)
 
 That split is the cleanest current fit for TinyKVM because it avoids stacking the older Dockerized gateway boundary on top of a Linux/KVM-native execution model.
 
-The security-specific reasoning for that split is documented in [tinykvm-security-architecture.md](/home/jonathan/src/claw/docs/tinykvm-security-architecture.md).
+The security-specific reasoning for that split is documented in [tinykvm-security-architecture.md](tinykvm-security-architecture.md).
 
 ## Architecture-Aware Prerequisites
 
 The packaging layer now treats prerequisite installation as a separate concern:
 
-- [Install-OpenClawPrereqs.ps1](/home/jonathan/src/claw/scripts/Install-OpenClawPrereqs.ps1) handles WSL and Docker Desktop
-- [Start-OpenClawPortableBundle.ps1](/home/jonathan/src/claw/installer/Start-OpenClawPortableBundle.ps1) selects `x64` or `arm64` payloads at runtime
-- [Build-OpenClawPortableBundle.sh](/home/jonathan/src/claw/installer/Build-OpenClawPortableBundle.sh) builds a redistributable bundle tree
+- [Install-OpenClawPrereqs.ps1](../scripts/Install-OpenClawPrereqs.ps1) handles WSL and Docker Desktop
+- [Start-OpenClawPortableBundle.ps1](../installer/Start-OpenClawPortableBundle.ps1) selects `x64` or `arm64` payloads at runtime
+- [Build-OpenClawPortableBundle.sh](../installer/Build-OpenClawPortableBundle.sh) builds a redistributable bundle tree
 
 This separation is important because Windows on Arm is not just a different CPU target. It changes the Docker Desktop backend constraints and should be packaged with architecture-specific prerequisite assets.
 
-The portable installer scaffold under [installer/README.md](/home/jonathan/src/claw/installer/README.md) sits alongside that model as a copyable Windows entrypoint. It is architecture-aware at launch time so a single bundle can route `x64` and `arm64` machines into the right payload slot without changing the VM validation path.
+The portable installer scaffold under [installer/README.md](../installer/README.md) sits alongside that model as a copyable Windows entrypoint. It is architecture-aware at launch time so a single bundle can route `x64` and `arm64` machines into the right payload slot without changing the VM validation path.

@@ -52,12 +52,12 @@ docker compose logs --tail=200 openclaw-gateway
 docker compose logs --tail=200 ollama-loopback
 ```
 
-For VM validation failures, collect guest diagnostics from [vm/scripts/guest/Collect-Diagnostics.ps1](/home/jonathan/src/claw/vm/scripts/guest/Collect-Diagnostics.ps1).
+For VM validation failures, collect guest diagnostics from [vm/scripts/guest/Collect-Diagnostics.ps1](../../vm/scripts/guest/Collect-Diagnostics.ps1).
 
 ## Upgrade
 
 1. Update the image tags or model choice in `.env` or rerun the installer with new parameters.
-2. Run [scripts/Install-OpenClawStack.ps1](/home/jonathan/src/claw/scripts/Install-OpenClawStack.ps1) again.
+2. Run [scripts/Install-OpenClawStack.ps1](../../scripts/Install-OpenClawStack.ps1) again.
 3. Re-run deployment validation.
 
 ## Rollback

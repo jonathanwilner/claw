@@ -32,46 +32,40 @@ The design is not aimed at making the whole OpenClaw gateway untrusted-safe by i
 - OpenClaw gateway running directly on Linux
 - local OpenClaw config and credentials under `~/.openclaw`
 - local Ollama endpoint, typically `http://127.0.0.1:11434`
-- OpenClaw user-systemd hardening override from [scripts/Apply-OpenClawSystemdHardening.sh](/home/jonathan/src/claw/scripts/Apply-OpenClawSystemdHardening.sh)
-- operator-managed scripts in [scripts/Install-OpenClawTinyKvmHost.sh](/home/jonathan/src/claw/scripts/Install-OpenClawTinyKvmHost.sh) and [scripts/Validate-OpenClawTinyKvmHost.sh](/home/jonathan/src/claw/scripts/Validate-OpenClawTinyKvmHost.sh)
+- OpenClaw user-systemd hardening override from [scripts/Apply-OpenClawSystemdHardening.sh](../scripts/Apply-OpenClawSystemdHardening.sh)
+- operator-managed scripts in [scripts/Install-OpenClawTinyKvmHost.sh](../scripts/Install-OpenClawTinyKvmHost.sh) and [scripts/Validate-OpenClawTinyKvmHost.sh](../scripts/Validate-OpenClawTinyKvmHost.sh)
 
 ### Isolated execution plane
 
-- TinyKVM itself, built from upstream source by [scripts/Install-TinyKvmTooling.sh](/home/jonathan/src/claw/scripts/Install-TinyKvmTooling.sh)
-- the local runner binary defined in [tinykvm-runner/openclaw_tinykvm_runner.cpp](/home/jonathan/src/claw/tinykvm-runner/openclaw_tinykvm_runner.cpp)
-- the operator-facing wrapper [scripts/openclaw-tinykvm-run.sh](/home/jonathan/src/claw/scripts/openclaw-tinykvm-run.sh)
+- TinyKVM itself, built from upstream source by [scripts/Install-TinyKvmTooling.sh](../scripts/Install-TinyKvmTooling.sh)
+- the local runner binary defined in [tinykvm-runner/openclaw_tinykvm_runner.cpp](../tinykvm-runner/openclaw_tinykvm_runner.cpp)
+- the operator-facing wrapper [scripts/openclaw-tinykvm-run.sh](../scripts/openclaw-tinykvm-run.sh)
 
 ## Topology Diagram
 
 ```mermaid
 flowchart TB
     operator[Operator]
-
-    subgraph host[Trusted Linux Host]
-        gateway[OpenClaw Gateway]
-        config[OpenClaw Config and Credentials]
-        ollama[Local Ollama]
-        wrapper[openclaw-tinykvm-run]
-        runner[openclaw-tinykvm-runner]
-        kvm[/dev/kvm]
-        workspace[Workspace Files]
-    end
-
-    subgraph guest[TinyKVM Guest Execution Plane]
-        binary[Target Linux ELF]
-        guestmem[Guest Memory]
-        limits[Timeout and Memory Limits]
-        fsview[Allowlisted File Reads]
-    end
+    gateway[OpenClaw Gateway]
+    config[OpenClaw Config and Credentials]
+    ollama[Local Ollama]
+    wrapper[openclaw-tinykvm-run]
+    runner[openclaw-tinykvm-runner]
+    kvm[dev kvm]
+    workspace[Workspace Files]
+    binary[Target Linux ELF]
+    guestmem[Guest Memory]
+    limits[Timeout and Memory Limits]
+    fsview[Allowlisted File Reads]
 
     operator --> gateway
+    config --> gateway
     gateway --> ollama
     operator --> wrapper
     wrapper --> runner
     runner --> kvm
-    runner --> guest
     runner --> workspace
-    config --> gateway
+    runner --> binary
     binary --> guestmem
     limits --> binary
     fsview --> binary
@@ -179,11 +173,11 @@ That distinction is operationally important. It gives humans and automation a se
 
 ## Execution Flow
 
-1. The operator installs OpenClaw on the host with [scripts/Install-OpenClawTinyKvmHost.sh](/home/jonathan/src/claw/scripts/Install-OpenClawTinyKvmHost.sh).
+1. The operator installs OpenClaw on the host with [scripts/Install-OpenClawTinyKvmHost.sh](../scripts/Install-OpenClawTinyKvmHost.sh).
 2. That script configures the gateway for local Linux use, binds it to loopback, sets token auth, and disables OpenClaw’s Docker sandbox mode.
 3. The installer applies a user-systemd hardening override so the host gateway process does not run with the default service surface.
-4. The operator installs TinyKVM tooling with [scripts/Install-TinyKvmTooling.sh](/home/jonathan/src/claw/scripts/Install-TinyKvmTooling.sh).
-5. When a Linux ELF should run with added isolation, the operator uses [scripts/openclaw-tinykvm-run.sh](/home/jonathan/src/claw/scripts/openclaw-tinykvm-run.sh).
+4. The operator installs TinyKVM tooling with [scripts/Install-TinyKvmTooling.sh](../scripts/Install-TinyKvmTooling.sh).
+5. When a Linux ELF should run with added isolation, the operator uses [scripts/openclaw-tinykvm-run.sh](../scripts/openclaw-tinykvm-run.sh).
 6. The wrapper launches the TinyKVM runner, which:
    - loads the program
    - detects whether it is dynamically linked
@@ -200,7 +194,7 @@ sequenceDiagram
     participant G as OpenClaw Gateway
     participant W as openclaw-tinykvm-run
     participant R as TinyKVM Runner
-    participant K as /dev/kvm
+    participant K as dev kvm
     participant V as TinyKVM Guest
 
     O->>G: normal control-plane usage
@@ -223,31 +217,24 @@ This flow highlights that the decision to isolate is explicit. The operator does
 ```mermaid
 flowchart LR
     binary[Untrusted or Semi-Trusted Binary]
-
-    subgraph controls[Security Controls]
-        execBoundary[TinyKVM Execution Boundary]
-        timeoutCtrl[Execution Timeout]
-        memCtrl[Memory and COW Limits]
-        readCtrl[Readable Path Allowlist]
-    end
-
-    subgraph assets[Protected Host Assets]
-        gatewayAsset[OpenClaw Gateway Process]
-        secretsAsset[OpenClaw Config and Secrets]
-        fsAsset[Host Filesystem Outside Allowlist]
-        stabilityAsset[Host Stability]
-    end
+    execBoundary[TinyKVM Execution Boundary]
+    timeoutCtrl[Execution Timeout]
+    memCtrl[Memory and Memory Limits]
+    readCtrl[Readable Path Allowlist]
+    gatewayAsset[OpenClaw Gateway Process]
+    secretsAsset[OpenClaw Config and Secrets]
+    fsAsset[Host Files Outside Allowlist]
+    stabilityAsset[Host Stability]
 
     binary --> execBoundary
     binary --> timeoutCtrl
     binary --> memCtrl
     binary --> readCtrl
-
-    execBoundary -. reduces direct host-process exposure .-> gatewayAsset
-    readCtrl -. blocks arbitrary reads .-> fsAsset
-    readCtrl -. reduces secret exposure .-> secretsAsset
-    timeoutCtrl -. limits hangs .-> stabilityAsset
-    memCtrl -. limits resource exhaustion .-> stabilityAsset
+    execBoundary --> gatewayAsset
+    readCtrl --> fsAsset
+    readCtrl --> secretsAsset
+    timeoutCtrl --> stabilityAsset
+    memCtrl --> stabilityAsset
 ```
 
 This diagram is the practical security story in one picture: TinyKVM does not make the gateway disappear, but it puts controls in front of the most obvious host-compromise and host-exhaustion paths for risky executable workloads.
@@ -289,7 +276,7 @@ That is a stronger and more defensible architecture than “run the gateway in D
 - Keep `gateway.bind=loopback`.
 - Keep gateway token auth enabled.
 - Use TinyKVM only on Linux hosts where `/dev/kvm` access is limited to trusted operators.
-- Treat [scripts/openclaw-tinykvm-run.sh](/home/jonathan/src/claw/scripts/openclaw-tinykvm-run.sh) as the default path for untrusted local binaries.
+- Treat [scripts/openclaw-tinykvm-run.sh](../scripts/openclaw-tinykvm-run.sh) as the default path for untrusted local binaries.
 - Keep `OPENCLAW_TINYKVM_EXTRA_READ_PREFIXES` as narrow as possible.
 - On non-FHS hosts, add only the specific loader and library roots required for execution.
 - Do not describe this as a full OpenClaw sandbox backend until upstream supports that integration model directly.
