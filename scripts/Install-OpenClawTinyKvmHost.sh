@@ -12,6 +12,9 @@ WORKSPACE_DIR="${HOME}/.openclaw/workspace"
 INSTALL_OPENCLAW=1
 START_OLLAMA=1
 APPLY_SYSTEMD_HARDENING=1
+COMPOSE_OPENCLAW_CONFIG_DIR="${OPENCLAW_CONFIG_DIR:-${PROJECT_ROOT}/state/openclaw-config}"
+COMPOSE_OPENCLAW_WORKSPACE_DIR="${OPENCLAW_WORKSPACE_DIR:-${PROJECT_ROOT}/state/openclaw-workspace}"
+COMPOSE_OLLAMA_DATA_DIR="${OLLAMA_DATA_DIR:-${PROJECT_ROOT}/state/ollama}"
 
 log() {
   printf '==> %s\n' "$1"
@@ -24,6 +27,43 @@ die() {
 
 require_cmd() {
   command -v "$1" >/dev/null 2>&1 || die "$1 is required"
+}
+
+ollama_api_reachable() {
+  python3 - "${1}/api/tags" <<'PY'
+import sys
+import urllib.request
+
+url = sys.argv[1]
+try:
+    with urllib.request.urlopen(url, timeout=5) as response:
+        if 200 <= response.status < 300:
+            sys.exit(0)
+except Exception:
+    pass
+sys.exit(1)
+PY
+}
+
+ollama_model_present() {
+  python3 - "${1}/api/tags" "${2}" <<'PY'
+import json
+import sys
+import urllib.request
+
+url = sys.argv[1]
+model = sys.argv[2]
+
+with urllib.request.urlopen(url, timeout=10) as response:
+    payload = json.load(response)
+
+models = payload.get("models") or []
+for entry in models:
+    if entry.get("name") == model:
+        sys.exit(0)
+
+sys.exit(1)
+PY
 }
 
 usage() {
@@ -91,6 +131,11 @@ done
 require_cmd curl
 require_cmd python3
 
+if [[ "${START_OLLAMA}" -eq 1 ]] && ollama_api_reachable "${OLLAMA_BASE_URL}"; then
+  log "Reusing existing Ollama at ${OLLAMA_BASE_URL}"
+  START_OLLAMA=0
+fi
+
 if [[ "${START_OLLAMA}" -eq 1 ]]; then
   require_cmd docker
 fi
@@ -107,10 +152,15 @@ fi
 require_cmd openclaw
 
 mkdir -p "${WORKSPACE_DIR}"
+mkdir -p "${COMPOSE_OPENCLAW_CONFIG_DIR}" "${COMPOSE_OPENCLAW_WORKSPACE_DIR}" "${COMPOSE_OLLAMA_DATA_DIR}"
 
 if [[ "${START_OLLAMA}" -eq 1 ]]; then
   log "Starting Ollama container"
-  docker compose --project-directory "${PROJECT_ROOT}" -f "${PROJECT_ROOT}/compose.yaml" up -d ollama
+  env \
+    OLLAMA_DATA_DIR="${COMPOSE_OLLAMA_DATA_DIR}" \
+    OPENCLAW_CONFIG_DIR="${COMPOSE_OPENCLAW_CONFIG_DIR}" \
+    OPENCLAW_WORKSPACE_DIR="${COMPOSE_OPENCLAW_WORKSPACE_DIR}" \
+    docker compose --project-directory "${PROJECT_ROOT}" -f "${PROJECT_ROOT}/compose.yaml" up -d ollama
 
   log "Waiting for Ollama"
   python3 - "${OLLAMA_BASE_URL}/api/tags" <<'PY'
@@ -135,8 +185,27 @@ sys.exit(1)
 PY
 
   log "Ensuring Ollama model ${MODEL} is present"
-  if ! docker compose --project-directory "${PROJECT_ROOT}" -f "${PROJECT_ROOT}/compose.yaml" exec -T ollama ollama list | grep -Fq "${MODEL}"; then
-    docker compose --project-directory "${PROJECT_ROOT}" -f "${PROJECT_ROOT}/compose.yaml" exec -T ollama ollama pull "${MODEL}"
+  if ! env \
+    OLLAMA_DATA_DIR="${COMPOSE_OLLAMA_DATA_DIR}" \
+    OPENCLAW_CONFIG_DIR="${COMPOSE_OPENCLAW_CONFIG_DIR}" \
+    OPENCLAW_WORKSPACE_DIR="${COMPOSE_OPENCLAW_WORKSPACE_DIR}" \
+    docker compose --project-directory "${PROJECT_ROOT}" -f "${PROJECT_ROOT}/compose.yaml" exec -T ollama ollama list | grep -Fq "${MODEL}"; then
+    env \
+      OLLAMA_DATA_DIR="${COMPOSE_OLLAMA_DATA_DIR}" \
+      OPENCLAW_CONFIG_DIR="${COMPOSE_OPENCLAW_CONFIG_DIR}" \
+      OPENCLAW_WORKSPACE_DIR="${COMPOSE_OPENCLAW_WORKSPACE_DIR}" \
+      docker compose --project-directory "${PROJECT_ROOT}" -f "${PROJECT_ROOT}/compose.yaml" exec -T ollama ollama pull "${MODEL}"
+  fi
+fi
+
+if [[ "${START_OLLAMA}" -eq 0 ]] && ollama_api_reachable "${OLLAMA_BASE_URL}" && ! ollama_model_present "${OLLAMA_BASE_URL}" "${MODEL}"; then
+  if command -v ollama >/dev/null 2>&1; then
+    log "Pulling ${MODEL} into the existing Ollama instance"
+    if ! OLLAMA_HOST="${OLLAMA_BASE_URL}" ollama pull "${MODEL}"; then
+      die "Failed to pull ${MODEL} from the existing Ollama instance at ${OLLAMA_BASE_URL}. Upgrade Ollama or rerun with --model <compatible-model>."
+    fi
+  else
+    die "Existing Ollama is reachable at ${OLLAMA_BASE_URL}, but the ollama CLI is unavailable and ${MODEL} is missing. Install the ollama CLI or rerun with --model <available-model> after preparing the server."
   fi
 fi
 

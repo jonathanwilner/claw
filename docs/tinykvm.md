@@ -67,6 +67,7 @@ openclaw-tinykvm-run ./my-program
 ## Behavior Notes
 
 - `Install-OpenClawTinyKvmHost.sh` installs OpenClaw from the current official installer if `openclaw` is missing.
+- If `OLLAMA_BASE_URL` is already reachable, the installer reuses that existing Ollama instance instead of starting the Docker `ollama` service.
 - It uses `openclaw config set ...` instead of writing guessed JSON directly.
 - It configures `gateway.mode=local`, `gateway.bind=loopback`, a token-based gateway auth mode, Ollama as the model provider, and `agents.defaults.sandbox.mode=off`.
 - It applies a Linux user-systemd hardening override to the host gateway so TinyKVM is not the only security control in the path.
