@@ -51,6 +51,20 @@ This packaging uses a BEADS-style decomposition:
 
 The stack intentionally stays close to the current upstream OpenClaw Docker model. The main customization is the Ollama loopback sidecar, which exists only to preserve OpenClaw’s native Ollama integration and tool-calling behavior in a multi-container packaged deployment.
 
+## TinyKVM-Optimized Topology
+
+The TinyKVM-oriented path is deliberately different:
+
+- OpenClaw runs on a Linux host instead of inside the packaged gateway container
+- Ollama can still stay local, including via the existing [compose.yaml](/home/jonathan/src/claw/compose.yaml) `ollama` service
+- OpenClaw sandbox mode is disabled for that path, because the current package surface still exposes Docker sandbox settings rather than a native TinyKVM backend
+- The host gateway is hardened separately with a user-systemd override instead of assuming TinyKVM alone protects the control plane
+- TinyKVM is installed as host-side tooling and invoked through the local runner wrapper built from [tinykvm-runner/](/home/jonathan/src/claw/tinykvm-runner)
+
+That split is the cleanest current fit for TinyKVM because it avoids stacking the older Dockerized gateway boundary on top of a Linux/KVM-native execution model.
+
+The security-specific reasoning for that split is documented in [tinykvm-security-architecture.md](/home/jonathan/src/claw/docs/tinykvm-security-architecture.md).
+
 ## Architecture-Aware Prerequisites
 
 The packaging layer now treats prerequisite installation as a separate concern:

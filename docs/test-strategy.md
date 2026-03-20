@@ -4,9 +4,26 @@
 
 The validation strategy is split across three layers:
 
+- TinyKVM host validation on Linux
 - fast PowerShell logic checks
 - host-level deployment smoke tests on Windows
 - full packaging validation in a disposable Windows 11 Hyper-V VM
+
+## TinyKVM Host Layer
+
+For the Linux / TinyKVM path, run:
+
+```bash
+./scripts/Validate-OpenClawTinyKvmHost.sh
+```
+
+That checks:
+
+- `/dev/kvm` presence and access
+- installed TinyKVM runner binaries
+- Ollama reachability
+- OpenClaw gateway status and health
+- model visibility from the current OpenClaw config
 
 ## Local Test Layer
 

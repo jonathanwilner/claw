@@ -1,9 +1,11 @@
 # Documentation Index
 
-This directory documents the Windows-first packaged deployment for OpenClaw with Docker Desktop, WSL2, and a local Ollama model runtime.
+This directory now documents both the older Windows packaging path and the newer Linux / TinyKVM host path.
 
 ## Sections
 
+- [TinyKVM Guide](tinykvm.md)
+- [TinyKVM Security Architecture](tinykvm-security-architecture.md)
 - [Architecture](architecture.md)
 - [Install Guide](install.md)
 - [Test Strategy](test-strategy.md)
@@ -13,6 +15,9 @@ This directory documents the Windows-first packaged deployment for OpenClaw with
 ## Primary Artifacts
 
 - Installer: [scripts/Install-OpenClawStack.ps1](/home/jonathan/src/claw/scripts/Install-OpenClawStack.ps1)
+- TinyKVM host installer: [scripts/Install-OpenClawTinyKvmHost.sh](/home/jonathan/src/claw/scripts/Install-OpenClawTinyKvmHost.sh)
+- TinyKVM host hardening: [scripts/Apply-OpenClawSystemdHardening.sh](/home/jonathan/src/claw/scripts/Apply-OpenClawSystemdHardening.sh)
+- TinyKVM tooling installer: [scripts/Install-TinyKvmTooling.sh](/home/jonathan/src/claw/scripts/Install-TinyKvmTooling.sh)
 - Portable bundle: [installer/README.md](/home/jonathan/src/claw/installer/README.md)
 - Validation wrapper: [scripts/Invoke-OpenClawDeploymentValidation.ps1](/home/jonathan/src/claw/scripts/Invoke-OpenClawDeploymentValidation.ps1)
 - Compose stack: [compose.yaml](/home/jonathan/src/claw/compose.yaml)
@@ -25,3 +30,4 @@ This directory documents the Windows-first packaged deployment for OpenClaw with
 - Docker Desktop provides the container runtime using the WSL2 backend.
 - Ollama runs as a dedicated container and hosts the local model.
 - OpenClaw runs in an upstream-compatible gateway container plus a CLI container for onboarding and operator commands.
+- The TinyKVM path instead runs OpenClaw directly on Linux and uses TinyKVM tooling explicitly for Linux ELF execution.

@@ -2,13 +2,15 @@
 
 ## Purpose
 
-This runbook captures three prompt variants for a Windows-first engineer who deploys open-source LLM software in Docker on Microsoft Windows with WSL2. The runbook documents option `#1` and option `#3`, and it also creates option `#2` as the primary working prompt used by this runbook.
+This runbook captures prompt variants for Windows deployment work and for deeper OpenClaw security and virtualization hardening.
 
 ## Prompt Strategy
 
 - Option `#1`: short general prompt for ChatGPT-style use
 - Option `#2`: Codex-style system prompt for implementation work
 - Option `#3`: OpenClaw-specific deployment prompt
+- Option `#4`: OpenClaw security and VM hardening prompt
+- Option `#5`: OpenClaw TinyKVM integration hardening prompt
 
 This runbook uses option `#2` as the active operating prompt because it is the best fit for execution-focused packaging, scripting, troubleshooting, and deployment work.
 
@@ -57,13 +59,31 @@ For every deployment recommendation, include:
 Optimize for reproducible packaged deployment with minimal manual steps, strong diagnostics, and safe defaults.
 ```
 
+## Option 4: OpenClaw Security and VM Hardening Prompt
+
+Use this when the task is about reducing attack surface, designing isolation boundaries, integrating TinyKVM or Hyper-V style controls, or otherwise expanding the security architecture of OpenClaw.
+
+Source file: [OPENCLAW_SECURITY_VM_CODEX_PROMPT.md](/home/jonathan/src/claw/OPENCLAW_SECURITY_VM_CODEX_PROMPT.md)
+
+Operational rule: use option `#4` when the work is primarily about hardening, sandboxing, trust boundaries, exploit-surface reduction, or Linux/Windows virtualization architecture rather than ordinary packaging.
+
+## Option 5: OpenClaw TinyKVM Integration Hardening Prompt
+
+Use this when the task is specifically about deepening the current Linux host plus TinyKVM path in this repository without pretending upstream OpenClaw already ships a native TinyKVM sandbox backend.
+
+Source file: [OPENCLAW_TINYKVM_INTEGRATION_CODEX_PROMPT.md](/home/jonathan/src/claw/OPENCLAW_TINYKVM_INTEGRATION_CODEX_PROMPT.md)
+
+Operational rule: use option `#5` when the work should turn that prompt directly into concrete repo changes such as host service hardening, TinyKVM execution-lane tightening, install-time enforcement, and security validation.
+
 ## How To Use This Runbook
 
 1. Start with option `#2` as the active system prompt.
 2. Use option `#1` only when a shorter chat prompt is needed.
-3. Switch to option `#3` when the work is specifically OpenClaw-focused.
-4. For version-sensitive tasks, verify current documentation before acting.
-5. Keep Windows, WSL2, and container responsibilities explicitly separated in all plans and scripts.
+3. Switch to option `#3` when the work is specifically OpenClaw deployment-focused.
+4. Switch to option `#4` when the work is primarily security architecture or VM-backed isolation.
+5. Switch to option `#5` when the work is specifically about the implemented TinyKVM host path in this repository.
+6. For version-sensitive tasks, verify current documentation before acting.
+7. Keep Windows, WSL2, container, and VM responsibilities explicitly separated in all plans and scripts.
 
 ## Recommended Default
 

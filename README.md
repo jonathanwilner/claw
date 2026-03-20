@@ -1,6 +1,32 @@
-# OpenClaw Windows WSL2 Docker Packager
+# OpenClaw Deployment Scaffold
 
-This project packages OpenClaw for Windows-first deployment with:
+This project now has two tracks:
+
+- a legacy Windows / WSL2 / Docker Desktop packaging path
+- a Linux-first TinyKVM path for running OpenClaw on the host and using TinyKVM tooling where it actually fits
+
+The original Windows packaging is still here. The new TinyKVM path exists because TinyKVM wants direct Linux KVM access, and the current OpenClaw package does not ship a native TinyKVM sandbox backend.
+
+## TinyKVM Path
+
+Use the TinyKVM guide at [docs/tinykvm.md](/home/jonathan/src/claw/docs/tinykvm.md).
+
+The main entrypoints are:
+
+- [Install-TinyKvmTooling.sh](/home/jonathan/src/claw/scripts/Install-TinyKvmTooling.sh)
+- [Install-OpenClawTinyKvmHost.sh](/home/jonathan/src/claw/scripts/Install-OpenClawTinyKvmHost.sh)
+- [Validate-OpenClawTinyKvmHost.sh](/home/jonathan/src/claw/scripts/Validate-OpenClawTinyKvmHost.sh)
+
+That path:
+
+- runs OpenClaw directly on Linux instead of inside the old gateway container
+- keeps Ollama local
+- disables OpenClaw’s Docker sandbox mode to avoid double-wrapping TinyKVM work
+- installs an `openclaw-tinykvm-run` wrapper for Linux ELF execution
+
+## Legacy Windows Path
+
+The older packaging path still targets:
 
 - Windows 11 + WSL2 as the supported host model
 - Docker Desktop with the WSL2 backend
@@ -41,6 +67,6 @@ If you already have a running Windows WinApps VM named `RDPWindows`, use the BEA
 
 ## Important Constraints
 
-- OpenClaw currently recommends Windows via WSL2 rather than a native Windows runtime.
+- OpenClaw’s current package surface still centers sandbox config around Docker, so this repo does not claim a first-class TinyKVM sandbox backend that upstream does not ship.
 - The Dockerized gateway is useful for packaging and repeatable validation, but it is not a stronger trust boundary than the dedicated sandbox containers OpenClaw supports.
 - This repo is implementation scaffolding. It does not vendor the upstream OpenClaw source tree.
