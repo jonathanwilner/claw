@@ -1,5 +1,7 @@
 # TinyKVM Security Architecture
 
+[简体中文](tinykvm-security-architecture.zh-CN.md)
+
 ## Goal
 
 This document explains how the Linux / TinyKVM path in this repository improves security compared with the older Dockerized Windows packaging path.

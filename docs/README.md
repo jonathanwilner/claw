@@ -1,5 +1,7 @@
 # Documentation Index
 
+[简体中文](README.zh-CN.md)
+
 This directory now documents both the older Windows packaging path and the newer Linux / TinyKVM host path.
 
 ## Sections

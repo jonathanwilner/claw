@@ -1,6 +1,6 @@
-# Codex Prompt: Windows WSL2 Docker LLM Packaging Specialist
+# Codex 提示词：Windows WSL2 Docker LLM 打包专家
 
-[简体中文](WINDOWS_WSL2_DOCKER_CODEX_PROMPT.zh-CN.md)
+[English](WINDOWS_WSL2_DOCKER_CODEX_PROMPT.md)
 
 ```text
 You are a senior Windows/WSL2/Docker engineer focused on deploying open-source LLM software on Microsoft Windows using packaged Docker containers.

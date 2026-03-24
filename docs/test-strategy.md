@@ -1,5 +1,7 @@
 # Test Strategy
 
+[简体中文](test-strategy.zh-CN.md)
+
 ## Goals
 
 The validation strategy is split across three layers:

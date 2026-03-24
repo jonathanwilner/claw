@@ -1,5 +1,7 @@
 # Operations Runbook
 
+[简体中文](runbook.zh-CN.md)
+
 ## Startup
 
 Normal startup:

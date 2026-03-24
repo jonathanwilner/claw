@@ -1,5 +1,7 @@
 # OpenClaw Deployment Scaffold
 
+[简体中文](README.zh-CN.md)
+
 This project now has two tracks:
 
 - a legacy Windows / WSL2 / Docker Desktop packaging path

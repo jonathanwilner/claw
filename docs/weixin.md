@@ -1,5 +1,7 @@
 # Weixin Integration
 
+[简体中文](weixin.zh-CN.md)
+
 This packaging supports Tencent's OpenClaw Weixin plugin from npm:
 
 - package: `@tencent-weixin/openclaw-weixin`

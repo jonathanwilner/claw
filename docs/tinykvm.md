@@ -1,5 +1,7 @@
 # TinyKVM Guide
 
+[简体中文](tinykvm.zh-CN.md)
+
 ## What Changed
 
 This repository now includes a Linux-first path for running OpenClaw next to TinyKVM.

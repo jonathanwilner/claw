@@ -1,5 +1,7 @@
 # Windows WSL2 Docker LLM Deployment Runbook
 
+[简体中文](RUNBOOK.zh-CN.md)
+
 ## Purpose
 
 This runbook captures prompt variants for Windows deployment work and for deeper OpenClaw security and virtualization hardening.

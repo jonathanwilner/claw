@@ -1,5 +1,7 @@
 # Portable Installer Bundle
 
+[简体中文](README.zh-CN.md)
+
 This directory is the scaffold for a reusable Windows installer bundle that can be copied to another machine and run locally.
 
 ## Layout

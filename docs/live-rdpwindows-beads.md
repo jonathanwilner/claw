@@ -1,5 +1,7 @@
 # Live RDPWindows BEADS
 
+[简体中文](live-rdpwindows-beads.zh-CN.md)
+
 This runbook covers the existing libvirt WinApps VM path using the running `RDPWindows` guest instead of creating a new validation VM.
 
 ## Why This Path Exists

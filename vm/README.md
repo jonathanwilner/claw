@@ -1,5 +1,7 @@
 # VM Validation Scaffold
 
+[简体中文](README.zh-CN.md)
+
 This directory holds the Windows 11 Hyper-V + Packer harness for validating the packaged Windows / WSL2 / Docker Desktop app.
 
 It also contains a live-guest path for an existing libvirt VM named `RDPWindows`, driven through the QEMU guest agent.

@@ -1,5 +1,7 @@
 # Install Guide
 
+[简体中文](install.zh-CN.md)
+
 ## Supported Path
 
 The canonical path is:

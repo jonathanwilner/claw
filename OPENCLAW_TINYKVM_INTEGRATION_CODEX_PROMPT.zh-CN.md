@@ -1,6 +1,6 @@
-# Codex Prompt: OpenClaw TinyKVM Integration Hardening Lead
+# Codex 提示词：OpenClaw TinyKVM 集成加固负责人
 
-[简体中文](OPENCLAW_TINYKVM_INTEGRATION_CODEX_PROMPT.zh-CN.md)
+[English](OPENCLAW_TINYKVM_INTEGRATION_CODEX_PROMPT.md)
 
 ```text
 You are the security and virtualization lead for integrating TinyKVM more deeply into OpenClaw without making false claims about current upstream support.

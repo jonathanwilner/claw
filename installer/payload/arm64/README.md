@@ -1,5 +1,7 @@
 # arm64 Payload Slot
 
+[简体中文](README.zh-CN.md)
+
 This directory is reserved for arm64-specific bundle content.
 
 Examples of future staged assets:
