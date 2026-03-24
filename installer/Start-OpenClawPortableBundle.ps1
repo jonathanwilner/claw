@@ -14,6 +14,8 @@ param(
     [string]$OllamaApiKey = 'ollama-local',
     [switch]$InstallWsl,
     [switch]$InstallDockerDesktop,
+    [switch]$InstallWeixinPlugin,
+    [switch]$WeixinQrLogin,
     [switch]$ResetConfig,
     [switch]$SkipValidation,
     [switch]$DryRun
@@ -142,7 +144,13 @@ function Resolve-OptionalPayloadFile {
 
     foreach ($candidate in $Candidates) {
         $path = Join-Path $PayloadRoot $candidate
-        if (Test-Path -LiteralPath $path) {
+        if ($candidate.Contains('*') -or $candidate.Contains('?')) {
+            $match = Get-ChildItem -Path $path -File -ErrorAction SilentlyContinue | Sort-Object Name | Select-Object -First 1
+            if ($match) {
+                return $match.FullName
+            }
+        }
+        elseif (Test-Path -LiteralPath $path) {
             return (Resolve-Path -LiteralPath $path).Path
         }
     }
@@ -162,6 +170,11 @@ $installerPath = Join-Path $projectRootResolved 'scripts/Install-OpenClawStack.p
 $wslMsiPath = Resolve-OptionalPayloadFile -PayloadRoot $payloadRoot -Candidates @('wsl.msi', 'wsl.x64.msi', 'wsl.arm64.msi')
 $dockerInstallerPath = Resolve-OptionalPayloadFile -PayloadRoot $payloadRoot -Candidates @('DockerDesktopInstaller.exe')
 $dockerImageArchiveRoot = Resolve-OptionalPayloadFile -PayloadRoot $payloadRoot -Candidates @('images')
+$weixinPluginTarballPath = Resolve-OptionalPayloadFile -PayloadRoot $payloadRoot -Candidates @(
+    'npm/tencent-weixin-openclaw-weixin-*.tgz',
+    'npm/tencent-weixin-openclaw-weixin.tgz',
+    'npm/openclaw-weixin*.tgz'
+)
 $ollamaModelsArchivePath = Resolve-OptionalPayloadFile -PayloadRoot $payloadRoot -Candidates @(
     'ollama-models/ollama-models.tar.gz',
     'ollama-models/ollama-models.zip'
@@ -217,12 +230,24 @@ if ($ollamaModelsArchivePath) {
     $installerArguments += @('-OllamaModelsArchivePath', $ollamaModelsArchivePath)
 }
 
+if ($weixinPluginTarballPath) {
+    $installerArguments += @('-WeixinPluginTarballPath', $weixinPluginTarballPath)
+}
+
 if ($InstallWsl) {
     $installerArguments += '-InstallWsl'
 }
 
 if ($InstallDockerDesktop) {
     $installerArguments += '-InstallDockerDesktop'
+}
+
+if ($InstallWeixinPlugin) {
+    $installerArguments += '-InstallWeixinPlugin'
+}
+
+if ($WeixinQrLogin) {
+    $installerArguments += '-WeixinQrLogin'
 }
 
 if ($ResetConfig) {

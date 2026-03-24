@@ -8,6 +8,7 @@ This directory now documents both the older Windows packaging path and the newer
 - [TinyKVM Security Architecture](tinykvm-security-architecture.md)
 - [Architecture](architecture.md)
 - [Install Guide](install.md)
+- [Weixin Integration](weixin.md)
 - [Test Strategy](test-strategy.md)
 - [Operations Runbook](operations/runbook.md)
 - [Live RDPWindows BEADS](live-rdpwindows-beads.md)

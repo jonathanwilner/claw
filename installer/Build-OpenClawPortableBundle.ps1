@@ -10,7 +10,9 @@ param(
     [string]$DockerImagesX64Root,
     [string]$DockerImagesArm64Root,
     [string]$OllamaModelArchiveX64,
-    [string]$OllamaModelArchiveArm64
+    [string]$OllamaModelArchiveArm64,
+    [string]$WeixinPluginArchiveX64,
+    [string]$WeixinPluginArchiveArm64
 )
 
 Set-StrictMode -Version Latest
@@ -95,6 +97,8 @@ Copy-OptionalDirectory -Source $DockerImagesX64Root -Destination (Join-Path $pay
 Copy-OptionalDirectory -Source $DockerImagesArm64Root -Destination (Join-Path $payloadArm64 'images')
 Copy-OptionalFile -Source $OllamaModelArchiveX64 -Destination (Join-Path $payloadX64 ('ollama-models\' + [IO.Path]::GetFileName($OllamaModelArchiveX64)))
 Copy-OptionalFile -Source $OllamaModelArchiveArm64 -Destination (Join-Path $payloadArm64 ('ollama-models\' + [IO.Path]::GetFileName($OllamaModelArchiveArm64)))
+Copy-OptionalFile -Source $WeixinPluginArchiveX64 -Destination (Join-Path $payloadX64 ('npm\' + [IO.Path]::GetFileName($WeixinPluginArchiveX64)))
+Copy-OptionalFile -Source $WeixinPluginArchiveArm64 -Destination (Join-Path $payloadArm64 ('npm\' + [IO.Path]::GetFileName($WeixinPluginArchiveArm64)))
 
 $manifestPath = Join-Path $outputRootResolved 'installer\BundleManifest.json'
 $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json

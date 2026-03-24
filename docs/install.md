@@ -35,6 +35,16 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Install-OpenClawStack.ps1 `
   -Model 'glm-4.7-flash'
 ```
 
+To include Tencent's Weixin channel plugin during installation:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\Install-OpenClawStack.ps1 `
+  -Model 'glm-4.7-flash' `
+  -InstallWeixinPlugin
+```
+
+Add `-WeixinQrLogin` if you want the installer to pause for the plugin's interactive QR login flow.
+
 ## Portable Bundle Path
 
 If you want a copyable bundle that can be staged on another Windows machine, use the launcher under [installer/README.md](../installer/README.md).
@@ -59,6 +69,7 @@ powershell -ExecutionPolicy Bypass -File .\installer\Start-OpenClawPortableBundl
 - Pulls the configured local model into Ollama
 - Starts the OpenClaw gateway services
 - Runs official non-interactive OpenClaw onboarding against `http://127.0.0.1:11434`
+- Optionally installs `@tencent-weixin/openclaw-weixin` and enables the `openclaw-weixin` plugin
 - Restarts the gateway and runs deployment validation unless `-SkipValidation` is set
 
 ## Architecture Notes
@@ -78,6 +89,7 @@ The bundle launcher:
 - forwards any staged `wsl.msi` and `DockerDesktopInstaller.exe`
 - imports any staged `images/*.tar` archives
 - restores any staged `ollama-models/ollama-models.tar.gz`
+- forwards any staged `npm/*.tgz` Weixin plugin tarball
 - then invokes [Install-OpenClawStack.ps1](../scripts/Install-OpenClawStack.ps1)
 - The portable bundle launcher also exports the resolved architecture and payload root through environment variables for future staged assets
 
@@ -91,6 +103,7 @@ docker compose logs --tail=100 openclaw-gateway
 powershell -ExecutionPolicy Bypass -File .\scripts\Invoke-OpenClawDeploymentValidation.ps1 `
   -OllamaUri 'http://127.0.0.1:11434/api/tags' `
   -OpenClawUri 'http://127.0.0.1:18789/healthz' `
+  -WeixinMarkerPath '.\state\openclaw-config\openclaw-weixin-packaging.json' `
   -RequiredContainers openclaw-ollama,openclaw-gateway,openclaw-ollama-loopback
 ```
 

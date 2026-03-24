@@ -40,6 +40,8 @@ def main() -> int:
     parser.add_argument("--docker-images-arm64-root")
     parser.add_argument("--ollama-model-archive-x64")
     parser.add_argument("--ollama-model-archive-arm64")
+    parser.add_argument("--weixin-plugin-archive-x64")
+    parser.add_argument("--weixin-plugin-archive-arm64")
     parser.add_argument("--zip", action="store_true")
     args = parser.parse_args()
 
@@ -84,6 +86,8 @@ def main() -> int:
     archive_payloads = [
         (args.ollama_model_archive_x64, payload_x64 / "ollama-models" / Path(args.ollama_model_archive_x64).name if args.ollama_model_archive_x64 else None),
         (args.ollama_model_archive_arm64, payload_arm64 / "ollama-models" / Path(args.ollama_model_archive_arm64).name if args.ollama_model_archive_arm64 else None),
+        (args.weixin_plugin_archive_x64, payload_x64 / "npm" / Path(args.weixin_plugin_archive_x64).name if args.weixin_plugin_archive_x64 else None),
+        (args.weixin_plugin_archive_arm64, payload_arm64 / "npm" / Path(args.weixin_plugin_archive_arm64).name if args.weixin_plugin_archive_arm64 else None),
     ]
 
     for src, dst in archive_payloads:

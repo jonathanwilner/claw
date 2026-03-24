@@ -34,6 +34,7 @@ The older packaging path still targets:
 - Docker Desktop with the WSL2 backend
 - `ollama` as the local LLM runtime
 - PowerShell as the primary installer and operator surface
+- optional Tencent Weixin channel integration through `@tencent-weixin/openclaw-weixin`
 - Pester smoke tests plus a Hyper-V/Packer validation harness
 - a live libvirt/QEMU guest-agent path for an existing `RDPWindows` WinApps VM
 
@@ -60,8 +61,9 @@ The implementation follows a BEADS-style decomposition:
 2. Install or validate WSL2 and Docker Desktop prerequisites.
 3. Start the `ollama` container and pull the configured local model.
 4. Run `openclaw onboard --non-interactive` against the local Ollama endpoint.
-5. Start the OpenClaw gateway automatically.
-6. Run smoke tests locally and in a disposable Windows Hyper-V VM.
+5. Optionally install and enable the Tencent Weixin plugin.
+6. Start the OpenClaw gateway automatically.
+7. Run smoke tests locally and in a disposable Windows Hyper-V VM.
 
 ## Existing VM Flow
 

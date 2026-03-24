@@ -1,5 +1,6 @@
 BeforeAll {
     . $PSScriptRoot/../scripts/OpenClaw.DeploymentValidation.ps1
+    . $PSScriptRoot/../scripts/OpenClaw.WeixinPackaging.ps1
 }
 
 Describe 'OpenClaw deployment validation helpers' {
@@ -38,5 +39,40 @@ Describe 'OpenClaw deployment validation helpers' {
         $result.Passed | Should -BeGreaterOrEqual 0
         $result.Failed | Should -BeGreaterOrEqual 0
         $result.Succeeded | Should -BeOfType 'System.Boolean'
+    }
+
+    It 'resolves the default Weixin npm install spec when no tarball is staged' {
+        $workspace = Join-Path $TestDrive 'workspace'
+        New-Item -ItemType Directory -Path $workspace -Force | Out-Null
+
+        $resolved = Resolve-OpenClawWeixinInstallSpec -WorkspaceDirectory $workspace
+
+        $resolved.SourceKind | Should -Be 'npm'
+        $resolved.InstallSpec | Should -Be '@tencent-weixin/openclaw-weixin'
+        $resolved.HostPath | Should -BeNullOrEmpty
+    }
+
+    It 'stages a Weixin tarball into the OpenClaw workspace when provided' {
+        $workspace = Join-Path $TestDrive 'workspace'
+        New-Item -ItemType Directory -Path $workspace -Force | Out-Null
+        $tarball = Join-Path $TestDrive 'openclaw-weixin-1.0.3.tgz'
+        Set-Content -LiteralPath $tarball -Value 'dummy' -Encoding ascii
+
+        $resolved = Resolve-OpenClawWeixinInstallSpec -WorkspaceDirectory $workspace -WeixinPluginTarballPath $tarball
+
+        $resolved.SourceKind | Should -Be 'tarball'
+        $resolved.InstallSpec | Should -Be '/home/node/.openclaw/workspace/plugins/openclaw-weixin-1.0.3.tgz'
+        Test-Path -LiteralPath $resolved.HostPath | Should -BeTrue
+    }
+
+    It 'passes validation when the Weixin packaging marker is present' {
+        $markerPath = Join-Path $TestDrive 'openclaw-weixin-packaging.json'
+        $marker = New-OpenClawWeixinMarker -InstallSpec '@tencent-weixin/openclaw-weixin' -SourceKind 'npm'
+        $marker | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $markerPath -Encoding ascii
+
+        $check = Test-WeixinPackagingMarker -MarkerPath $markerPath
+
+        $check.Status | Should -Be 'Passed'
+        $check.Data.pluginId | Should -Be 'openclaw-weixin'
     }
 }

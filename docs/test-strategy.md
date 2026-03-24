@@ -32,6 +32,7 @@ The Pester suite in [tests/OpenClaw.DeploymentValidation.Tests.ps1](../tests/Ope
 - normalized check objects
 - parsing of `wsl.exe -l -v`
 - deployment summary generation
+- Weixin plugin tarball staging and packaging marker logic
 
 These are the fastest tests and do not require a running Docker stack.
 
@@ -44,6 +45,7 @@ The deployment validation wrapper in [scripts/Invoke-OpenClawDeploymentValidatio
 - Docker CLI and daemon health
 - required running containers
 - HTTP reachability for Ollama and OpenClaw
+- optional Weixin packaging marker presence
 
 Recommended command:
 
@@ -51,6 +53,7 @@ Recommended command:
 powershell -ExecutionPolicy Bypass -File .\scripts\Invoke-OpenClawDeploymentValidation.ps1 `
   -OllamaUri 'http://127.0.0.1:11434/api/tags' `
   -OpenClawUri 'http://127.0.0.1:18789/healthz' `
+  -WeixinMarkerPath '.\state\openclaw-config\openclaw-weixin-packaging.json' `
   -RequiredContainers openclaw-ollama,openclaw-gateway,openclaw-ollama-loopback
 ```
 
@@ -64,6 +67,7 @@ The Hyper-V/Packer harness under [vm/README.md](../vm/README.md) is the release-
 - stage the packaged repo payload
 - run [scripts/Install-OpenClawStack.ps1](../scripts/Install-OpenClawStack.ps1) inside the guest
 - confirm WSL2, Docker Desktop, and OpenClaw health inside the guest
+- if Weixin is enabled, verify the plugin install marker and perform QR login manually as a release-only check
 
 This is the closest approximation of a fresh user install.
 

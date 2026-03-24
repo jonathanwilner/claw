@@ -29,6 +29,7 @@ When payloads are staged, the bundle can also operate in a mostly offline mode:
 
 - `images/*.tar` for Docker image archives
 - `ollama-models/ollama-models.tar.gz` for a preloaded Ollama model store
+- `npm/*.tgz` for staged plugin tarballs such as `@tencent-weixin/openclaw-weixin`
 - `wsl.msi` for the official Microsoft WSL package
 - `DockerDesktopInstaller.exe` for Docker Desktop
 
@@ -59,6 +60,7 @@ Create an offline payload root for one architecture from a Docker-capable source
   --openclaw-image openclaw/openclaw:latest \
   --ollama-image ollama/ollama:latest \
   --helper-image alpine/socat:1.8.0.3 \
+  --weixin-plugin-npm-spec @tencent-weixin/openclaw-weixin \
   --model glm-4.7-flash \
   --ollama-models-dir /path/to/.ollama/models
 ```
@@ -71,6 +73,7 @@ Then include that payload root in the bundle:
   --output-root /tmp/openclaw-portable-bundle \
   --docker-images-x64-root /tmp/openclaw-offline-x64/images \
   --ollama-model-archive-x64 /tmp/openclaw-offline-x64/ollama-models/ollama-models.tar.gz \
+  --weixin-plugin-archive-x64 /tmp/openclaw-offline-x64/npm/tencent-weixin-openclaw-weixin-1.0.3.tgz \
   --wsl-x64 /path/to/wsl.x64.msi \
   --docker-x64 /path/to/DockerDesktopInstaller-x64.exe
 ```
@@ -94,6 +97,7 @@ With staged prerequisite installers:
 powershell -ExecutionPolicy Bypass -File .\installer\Start-OpenClawPortableBundle.ps1 `
   -InstallWsl `
   -InstallDockerDesktop `
+  -InstallWeixinPlugin `
   -Model 'glm-4.7-flash'
 ```
 

@@ -2,6 +2,7 @@
 param(
     [string]$OpenClawUri,
     [string]$OllamaUri = 'http://127.0.0.1:11434/',
+    [string]$WeixinMarkerPath,
     [string[]]$RequiredContainers = @(),
     [int]$TimeoutSeconds = 15,
     [switch]$AsJson
@@ -9,7 +10,7 @@ param(
 
 . $PSScriptRoot/OpenClaw.DeploymentValidation.ps1
 
-$result = Invoke-OpenClawDeploymentValidation -OpenClawUri $OpenClawUri -OllamaUri $OllamaUri -RequiredContainers $RequiredContainers -TimeoutSeconds $TimeoutSeconds
+$result = Invoke-OpenClawDeploymentValidation -OpenClawUri $OpenClawUri -OllamaUri $OllamaUri -WeixinMarkerPath $WeixinMarkerPath -RequiredContainers $RequiredContainers -TimeoutSeconds $TimeoutSeconds
 
 if ($AsJson) {
     $result | ConvertTo-Json -Depth 8
@@ -27,4 +28,3 @@ if (-not $result.Succeeded) {
 }
 
 exit 0
-

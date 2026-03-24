@@ -5,6 +5,8 @@ param(
     [string]$Distro = 'Ubuntu',
     [string]$OpenClawImage = 'openclaw/openclaw:latest',
     [string]$OllamaImage = 'ollama/ollama:latest',
+    [string]$WeixinPluginNpmSpec = '@tencent-weixin/openclaw-weixin',
+    [string]$WeixinPluginTarballPath,
     [string]$GatewayPort = '18789',
     [string]$BridgePort = '18790',
     [string]$GatewayBind = '0.0.0.0',
@@ -16,12 +18,16 @@ param(
     [string]$OllamaModelsArchivePath,
     [switch]$InstallWsl,
     [switch]$InstallDockerDesktop,
+    [switch]$InstallWeixinPlugin,
+    [switch]$WeixinQrLogin,
     [switch]$ResetConfig,
     [switch]$SkipValidation
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+
+. (Join-Path $PSScriptRoot 'OpenClaw.WeixinPackaging.ps1')
 
 function Test-IsAdministrator {
     $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
@@ -69,6 +75,12 @@ function Invoke-DockerCompose {
     finally {
         Pop-Location
     }
+}
+
+function Invoke-OpenClawCliCompose {
+    param([Parameter(Mandatory)][string[]]$Arguments)
+
+    Invoke-DockerCompose -Arguments (@('run', '--rm', '-T', 'openclaw-cli') + $Arguments)
 }
 
 function Test-DockerImagePresent {
@@ -177,6 +189,33 @@ function Write-EnvFile {
     Set-Content -LiteralPath $Path -Value ($lines -join [Environment]::NewLine) -Encoding ascii
 }
 
+function Configure-OpenClawWeixinPlugin {
+    param(
+        [Parameter(Mandatory)][string]$WorkspaceDirectory,
+        [Parameter(Mandatory)][string]$ConfigDirectory
+    )
+
+    $resolvedPlugin = Resolve-OpenClawWeixinInstallSpec `
+        -WorkspaceDirectory $WorkspaceDirectory `
+        -WeixinPluginTarballPath $WeixinPluginTarballPath `
+        -DefaultNpmSpec $WeixinPluginNpmSpec
+
+    Write-Step "Installing OpenClaw Weixin plugin from $($resolvedPlugin.InstallSpec)"
+    Invoke-OpenClawCliCompose -Arguments @('plugins', 'install', $resolvedPlugin.InstallSpec)
+
+    Write-Step 'Enabling OpenClaw Weixin plugin'
+    Invoke-OpenClawCliCompose -Arguments @('config', 'set', 'plugins.entries.openclaw-weixin.enabled', 'true')
+
+    if ($WeixinQrLogin) {
+        Write-Step 'Starting interactive Weixin QR login'
+        Invoke-DockerCompose -Arguments @('run', '--rm', 'openclaw-cli', 'channels', 'login', '--channel', 'openclaw-weixin')
+    }
+
+    $markerPath = Get-OpenClawWeixinMarkerPath -ConfigDirectory $ConfigDirectory
+    $marker = New-OpenClawWeixinMarker -InstallSpec $resolvedPlugin.InstallSpec -SourceKind $resolvedPlugin.SourceKind -QrLoginRequested:$WeixinQrLogin
+    $marker | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $markerPath -Encoding ascii
+}
+
 function Install-PrereqsIfRequested {
     if (-not $InstallWsl -and -not $InstallDockerDesktop) {
         return
@@ -269,6 +308,8 @@ Write-EnvFile -Path $envPath -Values @{
     OPENCLAW_GATEWAY_TOKEN         = ''
     OPENCLAW_IMAGE                 = $OpenClawImage
     OPENCLAW_TZ                    = $TimeZone
+    OPENCLAW_WEIXIN_ENABLED        = if ($InstallWeixinPlugin) { 'true' } else { 'false' }
+    OPENCLAW_WEIXIN_NPM_SPEC       = $WeixinPluginNpmSpec
     OPENCLAW_WORKSPACE_DIR         = './state/openclaw-workspace'
     PLAYWRIGHT_BROWSERS_PATH       = '/home/node/.cache/ms-playwright'
 }
@@ -323,6 +364,10 @@ if ($ResetConfig) {
 Write-Step 'Running non-interactive OpenClaw onboarding'
 Invoke-DockerCompose -Arguments $onboardArgs
 
+if ($InstallWeixinPlugin) {
+    Configure-OpenClawWeixinPlugin -WorkspaceDirectory $openClawWorkspaceDir -ConfigDirectory $openClawConfigDir
+}
+
 Write-Step 'Restarting the OpenClaw gateway with generated config'
 Invoke-DockerCompose -Arguments @('restart', 'openclaw-gateway', 'ollama-loopback')
 Wait-HttpEndpoint -Uri "http://127.0.0.1:$GatewayPort/healthz" -TimeoutSeconds 180
@@ -332,6 +377,7 @@ if (-not $SkipValidation) {
     & (Join-Path $PSScriptRoot 'Invoke-OpenClawDeploymentValidation.ps1') `
         -OllamaUri 'http://127.0.0.1:11434/api/tags' `
         -OpenClawUri "http://127.0.0.1:$GatewayPort/healthz" `
+        -WeixinMarkerPath (Get-OpenClawWeixinMarkerPath -ConfigDirectory $openClawConfigDir) `
         -RequiredContainers @('openclaw-ollama', 'openclaw-gateway', 'openclaw-ollama-loopback')
 
     if ($LASTEXITCODE -ne 0) {

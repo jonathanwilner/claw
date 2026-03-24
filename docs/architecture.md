@@ -31,6 +31,7 @@ This packaging uses a BEADS-style decomposition:
 - `openclaw-gateway`: main OpenClaw gateway exposing `18789` and `18790`
 - `openclaw-cli`: operator container used for onboarding and future CLI operations
 - `ollama-loopback`: local forwarder that makes `127.0.0.1:11434` resolve inside the gateway network namespace so official OpenClaw Ollama onboarding can run unmodified
+- `@tencent-weixin/openclaw-weixin`: optional Tencent channel plugin installed through the OpenClaw CLI container
 
 ## Data And Config Flow
 
@@ -39,6 +40,7 @@ This packaging uses a BEADS-style decomposition:
 - `state/openclaw-workspace` is mounted to `/home/node/.openclaw/workspace`
 - `state/ollama` is mounted to `/root/.ollama`
 - The installer pulls the configured model first, then uses OpenClaw onboarding to generate supported config against the local Ollama runtime
+- If Weixin integration is enabled, the installer then installs the Tencent plugin from npm or a staged tarball and writes packaging metadata to `state/openclaw-config/openclaw-weixin-packaging.json`
 
 ## Network Flow
 

@@ -238,11 +238,40 @@ function Test-HttpEndpoint {
     }
 }
 
+function Test-WeixinPackagingMarker {
+    [CmdletBinding()]
+    param(
+        [string]$MarkerPath
+    )
+
+    if (-not $MarkerPath) {
+        return New-OpenClawValidationCheck -Name 'Weixin packaging marker' -Status 'Skipped' -Message 'No Weixin packaging marker path was provided.' -Data $null
+    }
+
+    if (-not (Test-Path -LiteralPath $MarkerPath)) {
+        return New-OpenClawValidationCheck -Name 'Weixin packaging marker' -Status 'Skipped' -Message "Weixin packaging marker not found at $MarkerPath." -Data $null
+    }
+
+    try {
+        $raw = Get-Content -LiteralPath $MarkerPath -Raw
+        $data = $raw | ConvertFrom-Json
+        if ($data.pluginId -eq 'openclaw-weixin') {
+            return New-OpenClawValidationCheck -Name 'Weixin packaging marker' -Status 'Passed' -Message "Weixin packaging metadata found at $MarkerPath." -Data $data
+        }
+
+        return New-OpenClawValidationCheck -Name 'Weixin packaging marker' -Status 'Failed' -Message "Unexpected Weixin plugin marker contents at $MarkerPath." -Data $data
+    }
+    catch {
+        return New-OpenClawValidationCheck -Name 'Weixin packaging marker' -Status 'Failed' -Message $_.Exception.Message -Data $null
+    }
+}
+
 function Invoke-OpenClawDeploymentValidation {
     [CmdletBinding()]
     param(
         [string]$OpenClawUri,
         [string]$OllamaUri = 'http://127.0.0.1:11434/',
+        [string]$WeixinMarkerPath,
         [string[]]$RequiredContainers = @(),
         [int]$TimeoutSeconds = 15
     )
@@ -263,6 +292,8 @@ function Invoke-OpenClawDeploymentValidation {
     if ($OpenClawUri) {
         $checks += Test-HttpEndpoint -Uri ([uri]$OpenClawUri) -TimeoutSeconds $TimeoutSeconds
     }
+
+    $checks += Test-WeixinPackagingMarker -MarkerPath $WeixinMarkerPath
 
     $passed = @($checks | Where-Object { $_.Passed }).Count
     $failed = @($checks | Where-Object { $_.Status -eq 'Failed' }).Count
